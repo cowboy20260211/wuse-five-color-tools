@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>五色工具 - 五色疗法色方生成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px 0;
+            color: #2c5530;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .input-section {
+            padding: 15px;
+        }
+        
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .clear-icon {
+            color: #2c5530;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .input-field {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #2c5530;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a21;
+        }
+        
+        .btn-secondary {
+            background: #e8f5e9;
+            color: #2c5530;
+        }
+        
+        .btn-secondary:hover {
+            background: #c8e6c9;
+        }
+        
+        .gua-toggle {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #2c5530;
+            font-size: 14px;
+        }
+        
+        .gua-toggle:hover {
+            background: #f5f5f5;
+        }
+        
+        .arrow {
+            transition: transform 0.3s;
+        }
+        
+        .arrow.up {
+            transform: rotate(180deg);
+        }
+        
+        .gua-panel {
+            display: none;
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .gua-panel.show {
+            display: block;
+        }
+        
+        .gua-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .gua-label {
+            width: 30px;
+            font-size: 14px;
+            color: #2c5530;
+            font-weight: bold;
+        }
+        
+        .color-btn {
+            padding: 5px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            background: white;
+            transition: all 0.2s;
+        }
+        
+        .color-btn:hover {
+            border-color: #2c5530;
+        }
+        
+        .color-btn.active {
+            background: #2c5530;
+            color: white;
+            border-color: #2c5530;
+        }
+        
+        .color-btn.green { border-left: 4px solid #4CAF50; }
+        .color-btn.red { border-left: 4px solid #f44336; }
+        .color-btn.yellow { border-left: 4px solid #FFC107; }
+        .color-btn.white { border-left: 4px solid #9E9E9E; }
+        .color-btn.black { border-left: 4px solid #000; }
+        
+        .num-output {
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .num-output input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+        }
+        
+        .images-section {
+            display: none;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .images-section.show {
+            display: block;
+        }
+        
+        .images-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .image-card {
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
+        }
+        
+        .image-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .image-card canvas {
+            width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .image-card canvas:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .modal-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        /* Popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .popup-overlay.show {
+            display: block;
+        }
+        
+        .popup {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .popup.show {
+            transform: translateY(0);
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .popup-header h2 {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .popup-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #2c5530;
+            cursor: pointer;
+        }
+        
+        .popup-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn-block {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2c5530;
+            color: #2c5530;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .toast.show {
+            display: block;
+        }
+        
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1500;
+            flex-direction: column;
+        }
+        
+        .loading.show {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2c5530;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 15px;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .input-row {
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .color-btn {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            
+            .gua-label {
+                width: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>五色工具</h1>
+            <p>五色疗法色方生成器</p>
+        </div>
+        
+        <!-- 处方输入 -->
+        <div class="card">
+            <div class="input-section">
+                <div class="input-row">
+                    <span class="clear-icon" onclick="clearPrescription()">✕</span>
+                    <input type="text" class="input-field" id="prescriptionInput" placeholder="输入五色方，如：无热方震绿 或 艮坤乾绿震白">
+                    <button class="btn btn-primary" onclick="generateImages()">获取图片</button>
+                    <button class="btn btn-secondary" onclick="openPopup()">处方定义</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 卦位颜色选择 -->
+        <div class="card">
+            <div class="gua-toggle" onclick="toggleGuaPanel()">
+                <span>卦位颜色选定(点击显示隐藏)</span>
+                <span class="arrow" id="guaArrow">▼</span>
+            </div>
+            <div class="gua-panel" id="guaPanel"></div>
+            <div class="num-output">
+                <input type="text" id="numOutput" placeholder="数字+颜色处方将在此显示" readonly>
+            </div>
+        </div>
+        
+        <!-- 生成的图片 -->
+        <div class="card">
+            <div class="images-section" id="imagesSection">
+                <div class="images-container">
+                    <div class="image-card">
+                        <h3>腹部图</h3>
+                        <canvas id="canvasFu" width="400" height="400" onclick="showModal('fu')"></canvas>
+                    </div>
+                    <div class="image-card">
+                        <h3>左手图</h3>
+                        <canvas id="canvasShou" width="400" height="400" onclick="showModal('shou')"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部 -->
+        <div class="footer">
+            ©启翔明智·五色管理健康 2019-2024
+        </div>
+    </div>
+    
+    <!-- 图片放大模态框 -->
+    <div class="modal" id="imageModal" onclick="closeModal()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <img id="modalImage" src="" alt="放大图片">
+        </div>
+    </div>
+    
+    <!-- 处方定义弹窗 -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+    <div class="popup" id="prescriptionPopup">
+        <div class="popup-header">
+            <button class="popup-close" onclick="closePopup()">关闭</button>
+            <h2>常用处方自定义</h2>
+            <span></span>
+        </div>
+        <div class="popup-body">
+            <div class="form-group">
+                <label>姓名</label>
+                <input type="text" id="userName" placeholder="请输入阁下姓名">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>手机号或邮箱地址</label>
+                    <input type="text" id="userContact" placeholder="请输入手机号或邮箱地址">
+                </div>
+            </div>
+            <div class="form-group" style="text-align: right;">
+                <button class="btn btn-outline" onclick="loadPrescriptions()">获取已保存处方</button>
+            </div>
+            <div class="form-group">
+                <label>处方列表（每行一个处方，格式：处方名,颜色配置）</label>
+                <textarea id="prescriptionList" placeholder="请输入五色处方（如：无热,艮坤兑绿震巽白坎黑），请换行定义下一个处方"></textarea>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="savePrescriptions()">保存</button>
+        </div>
+    </div>
+    
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">正在生成图片...</div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 八卦方位配置
+        const guaConfig = [
+            { name: '艮', angle: 315, position: '左下' },
+            { name: '震', angle: 270, position: '左' },
+            { name: '巽', angle: 225, position: '左上' },
+            { name: '离', angle: 180, position: '上' },
+            { name: '坤', angle: 135, position: '右上' },
+            { name: '兑', angle: 90, position: '右' },
+            { name: '乾', angle: 45, position: '右下' },
+            { name: '坎', angle: 0, position: '下' }
+        ];
+        
+        // 五色配置
+        const colorConfig = {
+            '绿': '#4CAF50',
+            '红': '#f44336',
+            '黄': '#FFC107',
+            '白': '#FFFFFF',
+            '黑': '#000000'
+        };
+        
+        // 当前选中的颜色
+        let selectedColors = {};
+        
+        // 初始化卦位选择面板
+        function initGuaPanel() {
+            const panel = document.getElementById('guaPanel');
+            let html = '';
+            
+            guaConfig.forEach(gua => {
+                html += `
+                    <div class="gua-row">
+                        <span class="gua-label">${gua.name}</span>
+                        ${Object.keys(colorConfig).map(color => 
+                            `<button class="color-btn ${getColorClass(color)}" 
+                                onclick="selectColor('${gua.name}', '${color}')">${color}</button>`
+                        ).join('')}
+                        <button class="color-btn" onclick="selectColor('${gua.name}', '')">清</button>
+                    </div>
+                `;
+            });
+            
+            panel.innerHTML = html;
+        }
+        
+        function getColorClass(color) {
+            const classMap = {
+                '绿': 'green',
+                '红': 'red',
+                '黄': 'yellow',
+                '白': 'white',
+                '黑': 'black'
+            };
+            return classMap[color] || '';
+        }
+        
+        // 切换卦位面板显示
+        function toggleGuaPanel() {
+            const panel = document.getElementById('guaPanel');
+            const arrow = document.getElementById('guaArrow');
+            panel.classList.toggle('show');
+            arrow.classList.toggle('up');
+        }
+        
+        // 选择颜色
+        function selectColor(gua, color) {
+            const panel = document.getElementById('guaPanel');
+            const rows = panel.querySelectorAll('.gua-row');
+            
+            rows.forEach(row => {
+                const label = row.querySelector('.gua-label').textContent;
+                if (label === gua) {
+                    row.querySelectorAll('.color-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.textContent === color || (color === '' && btn.textContent === '清')) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+            });
+            
+            if (color === '') {
+                delete selectedColors[gua];
+            } else {
+                selectedColors[gua] = color;
+            }
+            
+            updatePrescriptionInput();
+            updateNumOutput();
+        }
+        
+        // 更新处方输入框
+        function updatePrescriptionInput() {
+            const input = document.getElementById('prescriptionInput');
+            let prescription = '';
+            
+            guaConfig.forEach(gua => {
+                if (selectedColors[gua.name]) {
+                    prescription += gua.name + selectedColors[gua.name];
+                }
+            });
+            
+            input.value = prescription;
+        }
+        
+        // 更新数字输出框
+        function updateNumOutput() {
+            const output = document.getElementById('numOutput');
+            let result = '';
+            
+            guaConfig.forEach((gua, index) => {
+                if (selectedColors[gua.name]) {
+                    result += (index + 1) + selectedColors[gua.name] + ' ';
+                }
+            });
+            
+            output.value = result.trim();
+        }
+        
+        // 清除处方
+        function clearPrescription() {
+            document.getElementById('prescriptionInput').value = '';
+            document.getElementById('numOutput').value = '';
+            selectedColors = {};
+            
+            // 重置所有按钮状态
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+        
+        // 解析处方文本
+        function parsePrescription(text) {
+            const colors = {};
+            
+            // 匹配卦位+颜色格式，如：艮绿、坤红等
+            const pattern = /([艮震巽离坤兑乾坎])([绿红黄白黑])/g;
+            let match;
+            
+            while ((match = pattern.exec(text)) !== null) {
+                colors[match[1]] = match[2];
+            }
+            
+            return colors;
+        }
+        
+        // 生成图片
+        function generateImages() {
+            const input = document.getElementById('prescriptionInput').value;
+            
+            if (!input.trim()) {
+                showToast('请先选择颜色或输入处方');
+                return;
+            }
+            
+            showLoading();
+            
+            // 解析处方
+            const colors = parsePrescription(input);
+            selectedColors = colors;
+            
+            // 更新按钮状态
+            updateButtonStates();
+            updateNumOutput();
+            
+            // 延迟绘制，给loading时间显示
+            setTimeout(() => {
+                drawCanvas('canvasFu', colors, '腹部');
+                drawCanvas('canvasShou', colors, '左手');
+                
+                document.getElementById('imagesSection').classList.add('show');
+                hideLoading();
+            }, 100);
+        }
+        
+        // 更新按钮状态
+        function updateButtonStates() {
+            const panel = document.getElementById('guaPanel');
+            const rows = panel.querySelectorAll('.gua-row');
+            
+            rows.forEach(row => {
+                const label = row.querySelector('.gua-label').textContent;
+                row.querySelectorAll('.color-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (selectedColors[label] && btn.textContent === selectedColors[label]) {
+                        btn.classList.add('active');
+                    }
+                });
+            });
+        }
+        
+        // 绘制Canvas
+        function drawCanvas(canvasId, colors, title) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const center = size / 2;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, size, size);
+            
+            // 绘制背景
+            ctx.fillStyle = '#f9f9f9';
+            ctx.fillRect(0, 0, size, size);
+            
+            // 绘制八卦底图
+            drawBagua(ctx, center, size);
+            
+            // 绘制色块
+            drawColorBlocks(ctx, colors, center, size);
+            
+            // 绘制标题
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, center, 25);
+        }
+        
+        // 绘制八卦底图
+        function drawBagua(ctx, center, size) {
+            const radius = size * 0.35;
+            
+            // 绘制太极图背景圆
+            ctx.beginPath();
+            ctx.arc(center, center, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#f5f5f5';
+            ctx.fill();
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 绘制八卦符号
+            guaConfig.forEach((gua, index) => {
+                const angle = gua.angle * Math.PI / 180;
+                const x = center + radius * 1.1 * Math.sin(angle);
+                const y = center - radius * 1.1 * Math.cos(angle);
+                
+                ctx.fillStyle = '#666';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(gua.name, x, y);
+            });
+            
+            // 绘制中心圆
+            ctx.beginPath();
+            ctx.arc(center, center, radius * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#999';
+            ctx.stroke();
+            
+            // 绘制简单的太极图案
+            ctx.beginPath();
+            ctx.arc(center, center, radius * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fill();
+            ctx.strokeStyle = '#999';
+            ctx.stroke();
+        }
+        
+        // 绘制色块
+        function drawColorBlocks(ctx, colors, center, size) {
+            const radius = size * 0.35;
+            const blockWidth = size * 0.12;
+            const blockHeight = size * 0.04;
+            
+            guaConfig.forEach(gua => {
+                if (colors[gua.name]) {
+                    const color = colorConfig[colors[gua.name]];
+                    const angle = gua.angle;
+                    
+                    drawRotatedBlock(ctx, center, radius, blockWidth, blockHeight, angle, color);
+                }
+            });
+        }
+        
+        // 绘制旋转色块
+        function drawRotatedBlock(ctx, center, radius, width, height, angle, fillColor) {
+            const angleRad = angle * Math.PI / 180;
+            
+            // 计算色块中心位置
+            const blockCenter = radius * 0.65;
+            const x = center + blockCenter * Math.sin(angleRad) - width / 2;
+            const y = center - blockCenter * Math.cos(angleRad) - height / 2;
+            
+            ctx.save();
+            ctx.translate(x + width / 2, y + height / 2);
+            ctx.rotate(angleRad);
+            
+            // 绘制色块
+            ctx.fillStyle = fillColor;
+            ctx.fillRect(-width / 2, -height / 2, width, height);
+            
+            // 绘制边框
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(-width / 2, -height / 2, width, height);
+            
+            ctx.restore();
+        }
+        
+        // 显示图片放大模态框
+        function showModal(type) {
+            const canvas = type === 'fu' ? 
+                document.getElementById('canvasFu') : 
+                document.getElementById('canvasShou');
+            
+            const dataUrl = canvas.toDataURL('image/png');
+            document.getElementById('modalImage').src = dataUrl;
+            document.getElementById('imageModal').classList.add('show');
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('show');
+        }
+        
+        // 打开处方定义弹窗
+        function openPopup() {
+            document.getElementById('popupOverlay').classList.add('show');
+            document.getElementById('prescriptionPopup').classList.add('show');
+            
+            // 加载已保存的信息
+            loadSavedInfo();
+        }
+        
+        // 关闭处方定义弹窗
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('show');
+            document.getElementById('prescriptionPopup').classList.remove('show');
+        }
+        
+        // 加载已保存的用户信息
+        function loadSavedInfo() {
+            const savedData = localStorage.getItem('wuseUserData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('userName').value = data.name || '';
+                document.getElementById('userContact').value = data.contact || '';
+                document.getElementById('prescriptionList').value = data.prescriptions || '';
+            }
+        }
+        
+        // 保存处方
+        function savePrescriptions() {
+            const name = document.getElementById('userName').value.trim();
+            const contact = document.getElementById('userContact').value.trim();
+            const prescriptions = document.getElementById('prescriptionList').value.trim();
+            
+            if (!name) {
+                showToast('姓名不能为空');
+                return;
+            }
+            
+            if (!contact) {
+                showToast('手机号或邮箱不能为空');
+                return;
+            }
+            
+            if (!prescriptions) {
+                showToast('处方列表不能为空');
+                return;
+            }
+            
+            const data = {
+                name,
+                contact,
+                prescriptions,
+                updatedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('wuseUserData', JSON.stringify(data));
+            showToast('保存成功！');
+            closePopup();
+        }
+        
+        // 加载已保存的处方
+        function loadPrescriptions() {
+            const name = document.getElementById('userName').value.trim();
+            const contact = document.getElementById('userContact').value.trim();
+            
+            if (!name) {
+                showToast('请输入姓名');
+                return;
+            }
+            
+            if (!contact) {
+                showToast('请输入手机号或邮箱');
+                return;
+            }
+            
+            const savedData = localStorage.getItem('wuseUserData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.name === name && data.contact === contact) {
+                    document.getElementById('prescriptionList').value = data.prescriptions;
+                    showToast('已加载保存的处方');
+                } else {
+                    showToast('未找到匹配的保存记录');
+                }
+            } else {
+                showToast('暂无保存的处方');
+            }
+        }
+        
+        // 显示Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 显示Loading
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+        }
+        
+        // 隐藏Loading
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+        }
+        
+        // 处方输入框变化时解析
+        document.getElementById('prescriptionInput').addEventListener('input', function(e) {
+            const value = e.target.value;
+            
+            // 尝试从保存的处方中匹配
+            const savedData = localStorage.getItem('wuseUserData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                const lines = data.prescriptions.split('\n');
+                
+                for (let line of lines) {
+                    const parts = line.split(',');
+                    if (parts.length >= 2 && parts[0].trim() === value) {
+                        e.target.value = parts[1].trim();
+                        generateImages();
+                        return;
+                    }
+                }
+            }
+            
+            // 解析颜色选择
+            if (value) {
+                const colors = parsePrescription(value);
+                selectedColors = colors;
+                updateButtonStates();
+                updateNumOutput();
+            }
+        });
+        
+        // 页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            initGuaPanel();
+        });
+    </script>
+</body>
+</html>
