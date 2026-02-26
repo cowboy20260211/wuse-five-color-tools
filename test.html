@@ -1,0 +1,20 @@
+<script>
+const text = '艮坤兑绿震巽白坎黑';
+const guaNames = ['艮', '震', '巽', '离', '坤', '兑', '乾', '坎'];
+const pattern = /([艮震巽离坤兑乾坎]+)([绿红黄白黑])/g;
+let match;
+const colors = {};
+
+console.log('测试文本:', text);
+while ((match = pattern.exec(text)) !== null) {
+    console.log('匹配:', match[1], '+', match[2]);
+    const guaStr = match[1];
+    const color = match[2];
+    for (let char of guaStr) {
+        if (guaNames.includes(char)) {
+            colors[char] = color;
+        }
+    }
+}
+console.log('结果:', colors);
+</script>
