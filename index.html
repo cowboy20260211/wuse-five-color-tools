@@ -1466,7 +1466,47 @@
         document.addEventListener('DOMContentLoaded', function() {
             initGuaPanel();
             preloadImages();
+            
+            // 每天首次访问自动加载最近处方
+            checkAndAutoLoadPrescription();
         });
+        
+        // 每天首次访问检测并自动加载处方
+        function checkAndAutoLoadPrescription() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastVisit = localStorage.getItem('wuseLastVisitDate');
+            
+            // 检查是否已有保存的处方数据
+            const savedData = localStorage.getItem('wuseUserData');
+            if (!savedData) {
+                return; // 没有保存的处方，不做处理
+            }
+            
+            try {
+                const data = JSON.parse(savedData);
+                
+                // 检查是否是有效数据（姓名+联系方式+处方）
+                if (!data.name || !data.contact || !data.prescriptions) {
+                    return;
+                }
+                
+                // 每天首次访问时自动加载
+                if (lastVisit !== today) {
+                    // 记录今天已访问
+                    localStorage.setItem('wuseLastVisitDate', today);
+                    
+                    // 自动加载处方
+                    document.getElementById('userName').value = data.name || '';
+                    document.getElementById('userContact').value = data.contact || '';
+                    document.getElementById('prescriptionList').value = data.prescriptions || '';
+                    
+                    console.log('[五色工具] 每日首次访问，自动加载最近处方:', data.name, data.contact);
+                    showToast('已自动加载上次处方: ' + data.name);
+                }
+            } catch(err) {
+                console.error('[五色工具] 自动加载处方失败:', err);
+            }
+        }
     </script>
 </body>
 </html>
