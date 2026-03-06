@@ -603,7 +603,7 @@
         
         <!-- 底部 -->
         <div class="footer">
-            ©启翔明智·五色管理健康 2019-2026 <span id="versionInfo"></span>
+            ©启翔明智·五色管理健康 2019-2026 | 2026-03-06 f0bbc46
         </div>
     </div>
     
@@ -1469,23 +1469,7 @@
             
             // 每天首次访问自动加载最近处方
             checkAndAutoLoadPrescription();
-            
-            // 显示版本信息
-            setVersionInfo();
         });
-        
-        // 设置版本信息
-        function setVersionInfo() {
-            // 部署日期
-            const deployDate = '2026-03-06';
-            // 提交编号 - 当前部署的commit hash
-            const commitHash = '2240c83';
-            
-            const versionInfo = document.getElementById('versionInfo');
-            if (versionInfo) {
-                versionInfo.innerHTML = ` | ${deployDate} ${commitHash}`;
-            }
-        }
         
         // 每天首次访问检测并自动加载处方
         function checkAndAutoLoadPrescription() {
