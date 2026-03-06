@@ -1478,12 +1478,12 @@
         function setVersionInfo() {
             // 部署日期
             const deployDate = '2026-03-06';
-            // 部署编号
-            const deployNum = '021';
+            // 提交编号
+            const commitHash = 'fd9db27';
             
             const versionInfo = document.getElementById('versionInfo');
             if (versionInfo) {
-                versionInfo.innerHTML = ` | v${deployNum} ${deployDate}`;
+                versionInfo.innerHTML = ` | ${deployDate} ${commitHash}`;
             }
         }
         
